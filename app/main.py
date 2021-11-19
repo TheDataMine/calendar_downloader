@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 from app.models import date_from_cal
+import sqlite3
 
 
 app = FastAPI()
@@ -19,6 +20,8 @@ async def get_csv(resp: dict) -> pd.DataFrame:
     date_string = resp.get('chosen_date')
     some_data = {'a': [1,2,3], 'b': [5,5,5], 'c': [date_string, date_string, date_string]}
     df = pd.DataFrame(data=some_data)
+    conn = sqlite3.connect("/workspace/ticketing.db")
+    df = pd.read_sql_query(f"select * from smallfiles where Date = '{date_string}'", conn)
     return df
 
 
